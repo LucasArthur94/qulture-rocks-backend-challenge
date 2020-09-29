@@ -5,10 +5,8 @@ import {
   HttpStatus,
   HttpException,
   Body,
-  Put,
   Logger,
   Param,
-  Delete,
   Inject,
 } from '@nestjs/common'
 import { Repository } from 'typeorm'
@@ -16,7 +14,6 @@ import { InjectRepository } from '@nestjs/typeorm'
 import * as Bluebird from 'bluebird'
 import { Segmentation } from '../entities/segmentation.entity'
 import { User } from '../entities/user.entity'
-import { Tag } from '../entities/tag.entity'
 import { SegmentationUsersService } from '../services/segmentation-users.service'
 
 type SegmentationsBody = {

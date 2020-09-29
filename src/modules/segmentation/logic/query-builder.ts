@@ -2,20 +2,26 @@ import * as dayjs from 'dayjs'
 import { Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
 import { Segmentation } from '../entities/segmentation.entity'
 
-const dateQueryBuilder = (beforeDate?: Date, afterDate?: Date) => {
+const dateQueryBuilder = (
+  beforeDate?: Date,
+  afterDate?: Date,
+  withTime = false
+) => {
+  const formatString = withTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'
+
   if (beforeDate && afterDate) {
     return Between(
-      dayjs(beforeDate).format('YYYY-MM-DD HH:mm:ss'),
-      dayjs(afterDate).format('YYYY-MM-DD HH:mm:ss')
+      dayjs(beforeDate).format(formatString),
+      dayjs(afterDate).format(formatString)
     )
   }
 
   if (beforeDate) {
-    return MoreThanOrEqual(dayjs(beforeDate).format('YYYY-MM-DD HH:mm:ss'))
+    return LessThanOrEqual(dayjs(beforeDate).format(formatString))
   }
 
   if (afterDate) {
-    return LessThanOrEqual(dayjs(afterDate).format('YYYY-MM-DD HH:mm:ss'))
+    return MoreThanOrEqual(dayjs(afterDate).format(formatString))
   }
 
   return undefined
@@ -53,15 +59,16 @@ export const queryBuilder = (segmentation: Segmentation) => {
   const lastSignInDateQuery =
     lastSignInDateBefore || lastSignInDateAfter
       ? {
-          lastSignInDate: dateQueryBuilder(
+          lastSignInAt: dateQueryBuilder(
             lastSignInDateBefore,
-            lastSignInDateAfter
+            lastSignInDateAfter,
+            true
           ),
         }
       : undefined
 
   const isActiveQuery =
-    isActive !== undefined
+    typeof isActive === 'boolean'
       ? {
           isActive,
         }

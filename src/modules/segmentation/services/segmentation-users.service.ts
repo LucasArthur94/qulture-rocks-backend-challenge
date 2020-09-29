@@ -1,5 +1,5 @@
 import { Logger, Injectable } from '@nestjs/common'
-import { Repository } from 'typeorm'
+import { MoreThanOrEqual, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Segmentation } from '../entities/segmentation.entity'
 import { User } from '../entities/user.entity'
@@ -16,7 +16,7 @@ export class SegmentationUsersService {
 
   constructor(private logger: Logger) {}
 
-  async getSegmentationUsers(segmentation: Segmentation) {
+  async getSegmentationUsers(segmentation: Segmentation): Promise<User[]> {
     const query = queryBuilder(segmentation)
 
     const users = await this.usersRepository.find({
@@ -27,7 +27,9 @@ export class SegmentationUsersService {
     const segmentationTagId = segmentation.tagId
 
     return segmentationTagId
-      ? users.filter((user) => user.tagIds.includes(segmentationTagId))
+      ? users.filter((user) =>
+          user.tags.some((tag) => tag.id === segmentationTagId)
+        )
       : users
   }
 }

@@ -4,8 +4,8 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToMany,
-  JoinTable,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm'
 
 @Entity()
@@ -37,14 +37,13 @@ export class Segmentation {
   @Column({ type: 'timestamptz', nullable: true })
   lastSignInDateAfter?: Date
 
-  relatedSegmentationIds: number[]
+  @Column({ nullable: true })
+  tagId?: number
 
-  @ManyToMany(
-    (type) => Segmentation,
-    (segmentation) => segmentation.relatedSegmentations
-  )
-  @JoinTable()
-  relatedSegmentations: Segmentation[]
+  parentSegmentationId: number
+
+  @ManyToOne((type) => Segmentation)
+  parentSegmentation: Segmentation
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date

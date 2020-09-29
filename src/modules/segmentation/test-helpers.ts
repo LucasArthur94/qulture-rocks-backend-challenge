@@ -2,6 +2,7 @@ import ava, { TestInterface } from 'ava'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import * as sinon from 'sinon'
 import { Repository } from 'typeorm'
+import { Segmentation } from './entities/segmentation.entity'
 import { User } from './entities/user.entity'
 import { Tag } from './entities/tag.entity'
 
@@ -11,6 +12,7 @@ type RepoMock<T> = {
 
 const makeReposMock = () => {
   return {
+    segmentation: {} as RepoMock<Tag>,
     user: {} as RepoMock<User>,
     tag: {} as RepoMock<Tag>,
   }
@@ -38,6 +40,10 @@ export const getMockProviders = (repos: ReposMock) => {
     {
       provide: getRepositoryToken(Tag),
       useValue: repos.tag,
+    },
+    {
+      provide: getRepositoryToken(Segmentation),
+      useValue: repos.segmentation,
     },
   ]
 }

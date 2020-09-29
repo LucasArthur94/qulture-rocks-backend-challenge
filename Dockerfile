@@ -1,7 +1,7 @@
 # BUILD
 FROM node:12-alpine as build
 
-ADD package.json yarn.lock /app/
+ADD package.json yarn.lock .env.json tsconfig.json tsconfig.build.json /app/
 
 WORKDIR /app
 RUN yarn install && yarn build
@@ -11,7 +11,7 @@ COPY . .
 # RUN
 FROM node:12-alpine
 
-ADD package.json yarn.lock /app/
+ADD package.json yarn.lock .env.json tsconfig.json tsconfig.build.json /app/
 
 WORKDIR /app
 RUN yarn install --frozen-lockfile --production && yarn cache clean

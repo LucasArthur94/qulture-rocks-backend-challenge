@@ -1,0 +1,67 @@
+version: 2.1
+
+aliases:
+  - &deploy-heroku
+    name: Deploy Heroku
+    command: |
+      curl https://cli-assets.heroku.com/install.sh | sh
+      heroku container:login
+      heroku container:push web -a $APP_NAME
+      heroku container:release web -a $APP_NAME
+
+jobs:
+  install-dependencies:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependencies-cache-v1-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install dependencies
+          command: |
+            yarn install
+      - save_cache:
+          key: dependencies-cache-v1-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+
+  build-lint-test:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependencies-cache-v1-{{ checksum "yarn.lock" }}
+      - run:
+          name: Lint
+          command: yarn lint
+      - run:
+          name: build
+          command: yarn build
+      - run:
+          name: Test
+          command: yarn test
+
+  deploy-heroku:
+    machine: true
+    environment:
+      - APP_NAME: qulture
+    steps:
+      - checkout
+      - run: *deploy-heroku
+
+workflows:
+  build-test-release:
+    jobs:
+      - install-dependencies
+      - build-lint-test:
+          requires:
+            - install-dependencies
+      - deploy-heroku:
+          requires:
+            - build-lint-test
+          filters:
+            branches:
+              only:
+                - master

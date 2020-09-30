@@ -39,10 +39,10 @@ export class Segmentation {
   @Column({ nullable: true })
   tagId?: number
 
-  parentSegmentationId: number
+  parentSegmentationId?: number
 
   @ManyToOne((type) => Segmentation)
-  parentSegmentation: Segmentation
+  parentSegmentation?: Segmentation
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date

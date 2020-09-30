@@ -5,6 +5,7 @@ import { Repository } from 'typeorm'
 import { Segmentation } from './entities/segmentation.entity'
 import { User } from './entities/user.entity'
 import { Tag } from './entities/tag.entity'
+import { SegmentationUsersService } from './services/segmentation-users.service'
 
 type RepoMock<T> = {
   [key in keyof Repository<T>]: sinon.SinonStub

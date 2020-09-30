@@ -1,5 +1,5 @@
 import { Logger, Injectable } from '@nestjs/common'
-import { MoreThanOrEqual, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Segmentation } from '../entities/segmentation.entity'
 import { User } from '../entities/user.entity'

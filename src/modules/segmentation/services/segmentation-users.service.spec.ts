@@ -1,9 +1,9 @@
+import { Between } from 'typeorm'
 import { stub } from 'sinon'
 import { Test, TestingModule } from '@nestjs/testing'
 import { getMockProviders, makeTest } from '../test-helpers'
 import { SegmentationUsersService } from '../services/segmentation-users.service'
 import { Segmentation } from '../entities/segmentation.entity'
-import { Between } from 'typeorm'
 
 const test = makeTest<{
   provider: SegmentationUsersService

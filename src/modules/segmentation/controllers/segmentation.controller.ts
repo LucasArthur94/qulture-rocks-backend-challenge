@@ -16,10 +16,10 @@ import * as Bluebird from 'bluebird'
 import { Segmentation } from '../entities/segmentation.entity'
 import { User } from '../entities/user.entity'
 import { SegmentationUsersService } from '../services/segmentation-users.service'
-
-type SegmentationsBody = {
-  segmentations: Array<Omit<Segmentation, 'id' | 'createdAt' | 'updatedAt'>>
-}
+import {
+  CreateSegmentationsBody,
+  DeleteSegmentationBody,
+} from '../dto/segmentation.dto'
 
 @Controller('segmentations')
 export class SegmentationController {
@@ -83,11 +83,22 @@ export class SegmentationController {
 
   @Post()
   async createSegmentations(
-    @Body() body: SegmentationsBody
+    @Body() body: CreateSegmentationsBody
   ): Promise<{ segmentationId: number }> {
     const { segmentations } = body
 
-    const [mainSegmentation, ...otherSegmentations] = segmentations
+    const filteredSegmentations = segmentations.filter(
+      (segmentation) => Object.keys(segmentation).length > 0
+    )
+
+    if (filteredSegmentations.length === 0) {
+      throw new HttpException(
+        'please send a valid segmentations list',
+        HttpStatus.BAD_REQUEST
+      )
+    }
+
+    const [mainSegmentation, ...otherSegmentations] = filteredSegmentations
 
     const parentSegmentation = await this.segmentationsRepository.save(
       mainSegmentation
@@ -107,7 +118,7 @@ export class SegmentationController {
 
   @Delete()
   async deleteSegmentations(
-    @Body() body: { id: number }
+    @Body() body: DeleteSegmentationBody
   ): Promise<{ success: boolean }> {
     const { id } = body
 

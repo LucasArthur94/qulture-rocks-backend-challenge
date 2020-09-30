@@ -13,6 +13,7 @@ import {
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Tag } from '../entities/tag.entity'
+import { CreateTagBody, DeleteTagBody, EditTagBody } from '../dto/tag.dto'
 
 export type TagsResponse = {
   tags: Tag[]
@@ -52,7 +53,7 @@ export class TagController {
   }
 
   @Post()
-  async createTag(@Body() body: { name: string }): Promise<TagResponse> {
+  async createTag(@Body() body: CreateTagBody): Promise<TagResponse> {
     const { name } = body
 
     const tag = await this.tagsRepository.save({
@@ -65,9 +66,7 @@ export class TagController {
   }
 
   @Put()
-  async editTag(
-    @Body() body: { id: number; name: string }
-  ): Promise<TagResponse> {
+  async editTag(@Body() body: EditTagBody): Promise<TagResponse> {
     const { id, name } = body
 
     const tag = await this.tagsRepository.findOne(id)
@@ -97,7 +96,7 @@ export class TagController {
   }
 
   @Delete()
-  async deleteTag(@Body() body: { id: number }): Promise<{ success: true }> {
+  async deleteTag(@Body() body: DeleteTagBody): Promise<{ success: true }> {
     const { id } = body
 
     await this.tagsRepository.delete(id)

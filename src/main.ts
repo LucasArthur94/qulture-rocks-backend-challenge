@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 
@@ -9,6 +10,7 @@ async function bootstrap() {
     logger: new Logger(),
   })
   app.useGlobalInterceptors(new LoggingInterceptor())
+  app.useGlobalPipes(new ValidationPipe())
   await app.listen(config.port)
 }
 bootstrap()

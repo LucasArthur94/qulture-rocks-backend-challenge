@@ -14,6 +14,7 @@ import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from '../entities/user.entity'
 import { Tag } from '../entities/tag.entity'
+import { CreateUserBody, DeleteUserBody, EditUserBody } from '../dto/user.dto'
 
 export type UsersResponse = {
   users: User[]
@@ -22,8 +23,6 @@ export type UsersResponse = {
 export type UserResponse = {
   user: User
 }
-
-type UserBody = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'tags'>
 
 @Controller('users')
 export class UserController {
@@ -58,7 +57,7 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() body: UserBody): Promise<UserResponse> {
+  async createUser(@Body() body: CreateUserBody): Promise<UserResponse> {
     const { tagIds } = body
 
     const tags = await this.tagsRepository.findByIds(tagIds)
@@ -74,9 +73,7 @@ export class UserController {
   }
 
   @Put()
-  async editUser(
-    @Body() body: Partial<UserBody> & { id: number }
-  ): Promise<UserResponse> {
+  async editUser(@Body() body: EditUserBody): Promise<UserResponse> {
     const { id, tagIds } = body
 
     const user = await this.usersRepository.findOne({
@@ -103,7 +100,7 @@ export class UserController {
   }
 
   @Delete()
-  async deleteUser(@Body() body: { id: number }): Promise<{ success: true }> {
+  async deleteUser(@Body() body: DeleteUserBody): Promise<{ success: true }> {
     const { id } = body
 
     await this.usersRepository.delete(id)

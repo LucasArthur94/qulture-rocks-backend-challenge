@@ -81,6 +81,42 @@ test('should get a segmentation', async (t) => {
   })
 })
 
+test('should delete segmentations', async (t) => {
+  t.context.reposMock.segmentation.find = stub()
+    .withArgs([{ id: 1 }, { parentSegmentation: { id: 1 } }])
+    .resolves([
+      {
+        id: 1,
+        isActive: true,
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+      },
+      {
+        id: 2,
+        isActive: false,
+        admissionDateBefore: new Date(2016, 1, 1),
+        admissionDateAfter: new Date(2016, 12, 31),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        parentSegmentation: {
+          id: 1,
+          isActive: true,
+          createdAt: new Date(2020, 1, 1),
+          updatedAt: new Date(2020, 1, 1),
+        },
+      },
+    ])
+
+  t.context.reposMock.segmentation.delete = stub()
+
+  t.context.reposMock.segmentation.delete.withArgs(1).resolves()
+  t.context.reposMock.segmentation.delete.withArgs(2).resolves()
+
+  t.deepEqual(await t.context.controller.deleteSegmentations({ id: 1 }), {
+    success: true,
+  })
+})
+
 test('should get active users with admission date between 2016 and 2017', async (t) => {
   t.context.reposMock.segmentation.find = stub()
     .withArgs([{ id: 1 }, { parentSegmentation: { id: 1 } }])
@@ -189,6 +225,8 @@ test('should get male Marketing users or female Sales users', async (t) => {
     ])
 
   t.context.segmentationServiceMock.getSegmentationUsers = stub()
+
+  t.context.segmentationServiceMock.getSegmentationUsers
     .withArgs({
       id: 1,
       sex: 'male',
@@ -223,7 +261,7 @@ test('should get male Marketing users or female Sales users', async (t) => {
       },
     ])
 
-  t.context.segmentationServiceMock.getSegmentationUsers = stub()
+  t.context.segmentationServiceMock.getSegmentationUsers
     .withArgs({
       id: 2,
       sex: 'female',
@@ -308,6 +346,312 @@ test('should get male Marketing users or female Sales users', async (t) => {
           {
             id: 2,
             name: 'Sales',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+    ],
+  })
+})
+
+test('should get logged users 3 days before', async (t) => {
+  t.context.reposMock.segmentation.find = stub()
+    .withArgs([{ id: 1 }, { parentSegmentation: { id: 1 } }])
+    .resolves([
+      {
+        id: 1,
+        lastSignInDateAfter: new Date(2020, 9, 30),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+      },
+    ])
+
+  t.context.segmentationServiceMock.getSegmentationUsers = stub()
+    .withArgs({
+      id: 1,
+      lastSignInDateAfter: new Date(2020, 9, 27),
+      createdAt: new Date(2020, 1, 1),
+      updatedAt: new Date(2020, 1, 1),
+    })
+    .resolves([
+      {
+        id: 1,
+        email: 'main@qulturerocks.com',
+        firstName: 'Lucas',
+        lastName: 'Arthur',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: true,
+        sex: 'male',
+        lastSignInAt: new Date(2020, 9, 30),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [1],
+        tags: [
+          {
+            id: 1,
+            name: 'Marketing',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+    ])
+
+  t.deepEqual(await t.context.controller.getUsers('1'), {
+    users: [
+      {
+        id: 1,
+        email: 'main@qulturerocks.com',
+        firstName: 'Lucas',
+        lastName: 'Arthur',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: true,
+        sex: 'male',
+        lastSignInAt: new Date(2020, 9, 30),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [1],
+        tags: [
+          {
+            id: 1,
+            name: 'Marketing',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+    ],
+  })
+})
+
+test('should get RH, Engineering or Design users', async (t) => {
+  t.context.reposMock.segmentation.find = stub()
+    .withArgs([{ id: 1 }, { parentSegmentation: { id: 1 } }])
+    .resolves([
+      {
+        id: 1,
+        tagId: 1,
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+      },
+      {
+        id: 2,
+        tagId: 2,
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        parentSegmentation: {
+          id: 1,
+          tagId: 1,
+          createdAt: new Date(2020, 1, 1),
+          updatedAt: new Date(2020, 1, 1),
+        },
+      },
+      {
+        id: 3,
+        tagId: 3,
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        parentSegmentation: {
+          id: 1,
+          tagId: 1,
+          createdAt: new Date(2020, 1, 1),
+          updatedAt: new Date(2020, 1, 1),
+        },
+      },
+    ])
+
+  t.context.segmentationServiceMock.getSegmentationUsers = stub()
+
+  t.context.segmentationServiceMock.getSegmentationUsers
+    .withArgs({
+      id: 1,
+      tagId: 1,
+      createdAt: new Date(2020, 1, 1),
+      updatedAt: new Date(2020, 1, 1),
+    })
+    .resolves([
+      {
+        id: 1,
+        email: 'main@qulturerocks.com',
+        firstName: 'Lucas',
+        lastName: 'Arthur',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: true,
+        sex: 'male',
+        lastSignInAt: new Date(2020, 1, 1),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [1],
+        tags: [
+          {
+            id: 1,
+            name: 'RH',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+    ])
+
+  t.context.segmentationServiceMock.getSegmentationUsers
+    .withArgs({
+      id: 2,
+      tagId: 2,
+      createdAt: new Date(2020, 1, 1),
+      updatedAt: new Date(2020, 1, 1),
+      parentSegmentation: {
+        id: 1,
+        tagId: 1,
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+      },
+    })
+    .resolves([
+      {
+        id: 2,
+        email: 'master@qulturerocks.com',
+        firstName: 'Maria',
+        lastName: 'Eduarda',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: true,
+        sex: 'female',
+        lastSignInAt: new Date(2020, 1, 1),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [2],
+        tags: [
+          {
+            id: 2,
+            name: 'Engineering',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+    ])
+
+  t.context.segmentationServiceMock.getSegmentationUsers
+    .withArgs({
+      id: 3,
+      tagId: 3,
+      createdAt: new Date(2020, 1, 1),
+      updatedAt: new Date(2020, 1, 1),
+      parentSegmentation: {
+        id: 1,
+        tagId: 1,
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+      },
+    })
+    .resolves([
+      {
+        id: 3,
+        email: 'test@qulturerocks.com',
+        firstName: 'Test',
+        lastName: 'User',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: false,
+        sex: 'male',
+        lastSignInAt: new Date(2020, 1, 1),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [3],
+        tags: [
+          {
+            id: 3,
+            name: 'Design',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+    ])
+
+  t.deepEqual(await t.context.controller.getUsers('1'), {
+    users: [
+      {
+        id: 1,
+        email: 'main@qulturerocks.com',
+        firstName: 'Lucas',
+        lastName: 'Arthur',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: true,
+        sex: 'male',
+        lastSignInAt: new Date(2020, 1, 1),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [1],
+        tags: [
+          {
+            id: 1,
+            name: 'RH',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+      {
+        id: 2,
+        email: 'master@qulturerocks.com',
+        firstName: 'Maria',
+        lastName: 'Eduarda',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: true,
+        sex: 'female',
+        lastSignInAt: new Date(2020, 1, 1),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [2],
+        tags: [
+          {
+            id: 2,
+            name: 'Engineering',
+            userIds: [],
+            users: [],
+            createdAt: new Date(2020, 1, 1),
+            updatedAt: new Date(2020, 1, 1),
+          },
+        ],
+      },
+      {
+        id: 3,
+        email: 'test@qulturerocks.com',
+        firstName: 'Test',
+        lastName: 'User',
+        birthDate: new Date(2020, 1, 1),
+        admissionDate: new Date(2016, 7, 4),
+        isActive: false,
+        sex: 'male',
+        lastSignInAt: new Date(2020, 1, 1),
+        createdAt: new Date(2020, 1, 1),
+        updatedAt: new Date(2020, 1, 1),
+        tagIds: [3],
+        tags: [
+          {
+            id: 3,
+            name: 'Design',
             userIds: [],
             users: [],
             createdAt: new Date(2020, 1, 1),

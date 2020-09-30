@@ -1,33 +1,16 @@
-import * as dayjs from 'dayjs'
-import { Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
+import { FindOperator } from 'typeorm'
 import { Segmentation } from '../entities/segmentation.entity'
+import { dateQueryBuilder } from './date-query-builder'
 
-const dateQueryBuilder = (
-  beforeDate?: Date,
-  afterDate?: Date,
-  withTime = false
-) => {
-  const formatString = withTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'
-
-  if (beforeDate && afterDate) {
-    return Between(
-      dayjs(beforeDate).format(formatString),
-      dayjs(afterDate).format(formatString)
-    )
-  }
-
-  if (beforeDate) {
-    return LessThanOrEqual(dayjs(beforeDate).format(formatString))
-  }
-
-  if (afterDate) {
-    return MoreThanOrEqual(dayjs(afterDate).format(formatString))
-  }
-
-  return undefined
+type Query = {
+  sex?: 'male' | 'female'
+  isActive?: boolean
+  lastSignInAt?: FindOperator<any> | undefined
+  admissionDate?: FindOperator<any> | undefined
+  birthDate?: FindOperator<any> | undefined
 }
 
-export const queryBuilder = (segmentation: Segmentation) => {
+export const queryBuilder = (segmentation: Segmentation): Query => {
   const {
     birthDateBefore,
     birthDateAfter,

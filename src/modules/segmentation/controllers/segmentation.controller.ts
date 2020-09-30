@@ -8,6 +8,7 @@ import {
   Logger,
   Param,
   Inject,
+  Delete,
 } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -80,7 +81,7 @@ export class SegmentationController {
     }
   }
 
-  @Post('/create')
+  @Post()
   async createSegmentations(
     @Body() body: SegmentationsBody
   ): Promise<{ segmentationId: number }> {
@@ -101,6 +102,26 @@ export class SegmentationController {
 
     return {
       segmentationId: parentSegmentation.id,
+    }
+  }
+
+  @Delete()
+  async deleteSegmentations(
+    @Body() body: { id: number }
+  ): Promise<{ success: boolean }> {
+    const { id } = body
+
+    const relatedSegmentations = await this.segmentationsRepository.find({
+      relations: ['parentSegmentation'],
+      where: [{ id: Number(id) }, { parentSegmentation: { id: Number(id) } }],
+    })
+
+    await Bluebird.map(relatedSegmentations, async (segmentation) =>
+      this.segmentationsRepository.delete(segmentation.id)
+    )
+
+    return {
+      success: true,
     }
   }
 }

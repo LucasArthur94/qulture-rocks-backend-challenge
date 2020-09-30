@@ -81,4 +81,4 @@ yarn test
 O projeto foi configurado com uma pipeline básica de deploy, sem ambiente de staging, onde cada branch roda o build e o teste do projeto e cada commit na master, além dos testes, executa um deploy no Heroku.
 
 ## Infraestrutura
-O projeto está hospedado no [Heroku](https://qulture.herokuapp.com), com um banco PostgreSQL do próprio Heroku (via addon).
+O projeto está hospedado no [Heroku](https://qulture.herokuapp.com), com um banco PostgreSQL do próprio Heroku (via addon). O serviço já possui as segmentações cadastradas do documento do desafio, bem como dois usuários de exemplo (e as tags relacionadas) para validar esses exemplos.

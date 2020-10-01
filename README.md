@@ -71,7 +71,7 @@ Lógicas complexas que não necessitam ficar nos `controllers` e podem ser extra
 
 ## Testes
 
-Para rodar os testes unitários (do `logic`) e de integração (`controllers` e `services`):
+Para rodar os testes unitários (`logic`) e de integração (`controllers` e `services`):
 
 ```sh
 yarn test
@@ -82,3 +82,8 @@ O projeto foi configurado com uma pipeline básica de deploy, sem ambiente de st
 
 ## Infraestrutura
 O projeto está hospedado no [Heroku](https://qulture.herokuapp.com), com um banco PostgreSQL do próprio Heroku (via addon). O serviço já possui as segmentações cadastradas do documento do desafio, bem como dois usuários de exemplo (e as tags relacionadas) para validar esses exemplos.
+
+## Possíveis melhorias
+- [ ] Usar o conceito de migração do BD no lugar do `synchronize: true` no `segmentation.module.ts` (ver mais [aqui](https://docs.nestjs.com/techniques/database))
+- [ ] Abstrair a camada de repositórios para serviços (remover as chamadas diretas dos repositórios nos `controllers`)
+- [ ] Implementar autenticação básica no módulo `common` (usando o [Guard Component](https://docs.nestjs.com/guards))
